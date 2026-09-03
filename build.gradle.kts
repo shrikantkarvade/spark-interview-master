@@ -43,3 +43,85 @@ tasks.withType<ScalaCompile> {
         "-unchecked"
     )
 }
+
+tasks.register<JavaExec>("runSparkFoundationScala") {
+    group = "spark"
+    description = "Run Module 1.2 Spark Foundation - Scala"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.foundation.SparkFoundation")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runSparkFoundationJava") {
+    group = "spark"
+    description = "Run Module 1.2 Spark Foundation - Java"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.sparkjava.foundation.SparkFoundationJava")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runSparkFoundationSQL") {
+    group = "spark"
+    description = "Run Module 1.2 Spark Foundation - SQL"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.foundation.SparkFoundationSQL")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.withType<Test> {
+    useJUnit()
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runSparkFoundationPerformance") {
+    group = "spark"
+    description = "Run Module 1.2 Spark physical-plan performance investigation"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.foundation.SparkFoundationPerformance")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runSparkFoundationBenchmark") {
+    group = "spark"
+    description = "Run Module 1.2 10-million-row Spark performance benchmark"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.foundation.SparkFoundationBenchmark")
+
+    standardInput = System.`in`
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
