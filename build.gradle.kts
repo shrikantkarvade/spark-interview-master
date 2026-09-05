@@ -125,3 +125,17 @@ tasks.register<JavaExec>("runSparkFoundationBenchmark") {
         "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runEnterpriseSparkSession") {
+    group = "spark"
+    description = "Run Module 1.3 Enterprise SparkSession demonstration"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.foundation.EnterpriseSparkSessionDemo")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
