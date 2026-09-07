@@ -139,3 +139,52 @@ tasks.register<JavaExec>("runEnterpriseSparkSession") {
         "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runLogicalPlanExperiment") {
+    group = "spark"
+    description = "Run Module 1.4 logical-to-physical plan experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.planning.LogicalPlanExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+
+    args = project.findProperty("args")
+        ?.toString()
+        ?.split(" ")
+        ?: emptyList()
+}
+
+tasks.register<JavaExec>("runDataSourcePushdownExperiment") {
+    group = "spark"
+    description = "Run Module 1.4.11 data source filter and projection pushdown experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.planning.DataSourcePushdownExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+
+    args = project.findProperty("args")
+        ?.toString()
+        ?.split(" ")
+        ?: emptyList()
+}
+
+tasks.register<JavaExec>("runParquetFixtureWriter") {
+    group = "spark"
+    description = "Generate Module 1.4.11 Parquet fixture"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.planning.ParquetFixtureWriter")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
