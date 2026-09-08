@@ -308,3 +308,18 @@ tasks.register<JavaExec>("runAqePartitionManagementExperiment") {
         "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runProductionPartitionSizingExperiment") {
+    group = "spark"
+    description = "Run Module 1.5.10 production partition sizing experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.partitioning.ProductionPartitionSizingExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
