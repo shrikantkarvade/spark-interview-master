@@ -188,3 +188,78 @@ tasks.register<JavaExec>("runParquetFixtureWriter") {
         "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runPartitionBaselineExperiment") {
+    group = "spark"
+    description = "Run Module 1.5.1 partition baseline experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.partitioning.PartitionBaselineExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runRepartitionExperiment") {
+    group = "spark"
+    description = "Run Module 1.5.3 repartition experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.partitioning.RepartitionExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runCoalesceExperiment") {
+    group = "spark"
+    description = "Run Module 1.5.4 coalesce experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.partitioning.CoalesceExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runPartitionChangeBenchmark") {
+    group = "spark"
+    description = "Run Module 1.5.5 repartition vs coalesce benchmark"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.partitioning.PartitionChangeBenchmark"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runHashPartitioningExperiment") {
+    group = "spark"
+    description = "Run Module 1.5.6 hash partitioning experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.partitioning.HashPartitioningExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
