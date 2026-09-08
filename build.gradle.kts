@@ -263,3 +263,18 @@ tasks.register<JavaExec>("runHashPartitioningExperiment") {
         "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runPartitionImbalanceExperiment") {
+    group = "spark"
+    description = "Run Module 1.5.7 partition imbalance experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.partitioning.PartitionImbalanceExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
