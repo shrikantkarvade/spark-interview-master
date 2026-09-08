@@ -278,3 +278,18 @@ tasks.register<JavaExec>("runPartitionImbalanceExperiment") {
         "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runDataSkewMitigationExperiment") {
+    group = "spark"
+    description = "Run Module 1.5.8 data skew mitigation experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.partitioning.DataSkewMitigationExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
