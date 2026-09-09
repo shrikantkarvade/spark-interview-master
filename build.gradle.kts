@@ -323,3 +323,183 @@ tasks.register<JavaExec>("runProductionPartitionSizingExperiment") {
         "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runJoinBaselineExperiment") {
+
+    group = "spark"
+
+    description =
+        "Run Module 1.6.1 baseline join experiment"
+
+    classpath =
+        sourceSets["main"].runtimeClasspath
+
+    mainClass.set(
+        "com.shrikant.spark.joins.JoinBaselineExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runBroadcastHashJoinExperiment") {
+    group = "spark"
+    description = "Module 1.6.2 - Broadcast Hash Join experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.BroadcastHashJoinExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runBroadcastThresholdExperiment") {
+    group = "spark"
+    description = "Module 1.6.3 - Broadcast Threshold experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.BroadcastThresholdExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runSortMergeJoinExperiment") {
+    group = "spark"
+    description = "Module 1.6.4 - Sort Merge Join experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.SortMergeJoinExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runShuffleHashJoinExperiment") {
+    group = "spark"
+    description = "Module 1.6.5 - Shuffle Hash Join experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.ShuffleHashJoinExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runJoinHintsExperiment") {
+    group = "spark"
+    description = "Module 1.6.6 - Join Hints experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.JoinHintsExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runBuildSideSelectionExperiment") {
+    group = "spark"
+    description = "Module 1.6.7 - Build Side Selection experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.BuildSideSelectionExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runJoinStrategyComparisonExperiment") {
+    group = "spark"
+    description = "Module 1.6.8 - Join Strategy Comparison experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.JoinStrategyComparisonExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runJoinSkewExperiment") {
+    group = "spark"
+    description = "Module 1.6.9 - Join Skew experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.JoinSkewExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runAQESkewJoinExperiment") {
+    group = "spark"
+    description = "Module 1.6.10 - AQE + Join Skew experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.AQESkewJoinExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runAQESkewEligibilityDiagnostic") {
+    group = "spark"
+    description = "Module 1.6.10A - AQE Skew Eligibility Diagnostic"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.joins.AQESkewEligibilityDiagnostic"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runAQEJoinConversionExperiment") {
+    group = "spark"
+    description = "Module 1.6.11 - AQE Join Conversion experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.joins.AQEJoinConversionExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runProductionJoinOptimizationExperiment") {
+    group = "spark"
+    description = "Module 1.6.12 - Production Join Optimization experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.joins.ProductionJoinOptimizationExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
