@@ -503,3 +503,203 @@ tasks.register<JavaExec>("runProductionJoinOptimizationExperiment") {
         "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runBaselineAggregationExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.1 baseline aggregation experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.BaselineAggregationExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runHashAggregationExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.2 Hash Aggregation experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.HashAggregationExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runPartialAggregationExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.3 Partial Aggregation experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.PartialAggregationExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runAggregationCardinalityExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.4 Aggregation Cardinality experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.AggregationCardinalityExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runShufflePartitionSizingExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.5 Shuffle Partition Sizing experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.aggregations.ShufflePartitionSizingExperiment"
+    )
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runAQECoalescingExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.6 - AQE Coalescing Experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.AQECoalescingExperiment")
+
+    standardInput = System.`in`
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runGroupByOrderByExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.7 GroupBy + OrderBy experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.GroupByOrderByExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+
+    standardInput = System.`in`
+}
+
+tasks.register<JavaExec>("runTopNAggregationExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.8 Top-N Aggregation experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.TopNAggregationExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+
+    standardInput = System.`in`
+}
+
+tasks.register<JavaExec>("runDataSkewAggregationExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.9 Data Skew in Aggregation experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.DataSkewAggregationExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+
+    standardInput = System.`in`
+}
+
+tasks.register<JavaExec>("runAggregationAQESkewExperiment") {
+    group = "spark-experiments"
+    description = "Run Module 1.7.10 - AQE + Aggregation Skew experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.AggregationAQESkewExperiment")
+
+    args = project.findProperty("args")
+        ?.toString()
+        ?.split(" ")
+        ?: emptyList()
+
+    standardInput = System.`in`
+
+    jvmArgs(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runAggregationStrategyComparison") {
+
+    group = "spark"
+    description = "Run Module 1.7.11 Aggregation Strategy Comparison"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.AggregationStrategyComparison")
+
+    // -------------------------------------------------------------------------
+    // Forward the terminal's STDIN to the Java application.
+    //
+    // This is required because the Scala application pauses and waits for
+    // ENTER before continuing to the next experiment.
+    //
+    // Without this line, System.in inside the Spark application may not be
+    // connected to the Git Bash / terminal input when launched through Gradle.
+    // -------------------------------------------------------------------------
+    standardInput = System.`in`
+
+    // -------------------------------------------------------------------------
+    // Windows / Git Bash / MINGW compatibility.
+    //
+    // Spark on Java 17 can require access to JDK internals used by Spark /
+    // Hadoop / Netty.
+    //
+    // The first argument also removes the MINGW warning:
+    //
+    //   MINGW support requires
+    //   --add-opens java.base/java.lang=ALL-UNNAMED
+    // -------------------------------------------------------------------------
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runAggregationMemorySpillExperiment") {
+    group = "spark"
+    description = "Run Module 1.7.12 Aggregation Memory, Spill & Hash Map Pressure experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.aggregations.AggregationMemorySpillExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+    )
+
+    standardInput = System.`in`
+}
