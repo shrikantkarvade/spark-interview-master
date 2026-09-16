@@ -2,7 +2,7 @@ package com.shrikant.sparkjava;
 
 public class Main {
 
-    static void main(String[] args) {
+    public static void main(String[] args) {
         System.out.println("========================================");
         System.out.println("      Spark Interview Master");
         System.out.println("========================================");
