@@ -703,3 +703,174 @@ tasks.register<JavaExec>("runAggregationMemorySpillExperiment") {
 
     standardInput = System.`in`
 }
+
+tasks.register<JavaExec>("runShuffleArchitectureExperiment") {
+
+    group = "spark experiments"
+    description = "Runs Module 1.8.1 - Shuffle Architecture & Data Movement"
+
+    classpath = sourceSets["main"].runtimeClasspath
+
+    mainClass.set(
+        "com.shrikant.spark.shuffle.ShuffleArchitectureExperiment"
+    )
+
+    // Required so the launched Spark application has a normal stdin/stdout
+    // process environment and is consistent with the repository's other
+    // interactive/UI-enabled experiments.
+    standardInput = System.`in`
+
+    // Required by Spark when running locally with the JDK configuration used
+    // by this repository.
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runShufflePartitionSizing") {
+    group = "spark experiments"
+    description = "Runs Module 1.8.2 - Shuffle Partition Sizing Experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set(
+        "com.shrikant.spark.shuffle.ShufflePartitionSizingExperiment"
+    )
+
+    // Required so --ui-pause can receive ENTER from Git Bash / MINGW.
+    standardInput = System.`in`
+
+    // Required for Spark 3.5.1 execution under the current Java/MINGW setup.
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runShuffleReadWritePerformanceExperiment") {
+    group = "spark"
+    description = "Runs Module 1.8.3 - Shuffle Read/Write Performance"
+
+    classpath = sourceSets["main"].runtimeClasspath
+
+    mainClass.set(
+        "com.shrikant.spark.shuffle.ShuffleReadWritePerformanceExperiment"
+    )
+
+    standardInput = System.`in`
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runShuffleSpillMemoryExperiment") {
+    group = "application"
+    description = "Module 1.8.4 - Shuffle Spill & Memory experiment"
+
+    mainClass.set("com.shrikant.spark.shuffle.ShuffleSpillMemoryExperiment")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    maxHeapSize = "512m"
+
+    jvmArgs = listOf(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+
+    standardInput = System.`in`
+
+    if (project.hasProperty("args")) {
+        args = (project.property("args") as String).split(" ")
+    }
+}
+
+tasks.register<JavaExec>("runShuffleSerializationCompressionExperiment") {
+    group = "application"
+    description = "Runs Module 1.8.5 — Serialization & Compression Experiment"
+    mainClass.set("com.shrikant.spark.shuffle.ShuffleSerializationCompressionExperiment")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    // JVM module opens required for Java 17 and Spark reflection/serialization
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED",
+        "--add-opens=java.base/sun.security.action=ALL-UNNAMED",
+        "--add-opens=java.util/java.util=ALL-UNNAMED"
+    )
+
+    // Pass CLI arguments passed to gradle via --args="..."
+    val rawArgs = project.findProperty("args") as? String
+    if (rawArgs != null) {
+        setArgs(rawArgs.split(" "))
+    }
+}
+
+tasks.register<JavaExec>("runShufflePushBasedExperiment") {
+    group = "application"
+    description = "Runs Module 1.8.6 — Push-Based Shuffle Experiment"
+    mainClass.set("com.shrikant.spark.shuffle.ShufflePushBasedExperiment")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED",
+        "--add-opens=java.base/sun.security.action=ALL-UNNAMED"
+    )
+
+    val rawArgs = project.findProperty("args") as? String
+    if (rawArgs != null) {
+        setArgs(rawArgs.split(" "))
+    }
+}
+
+tasks.register<JavaExec>("runShuffleAQEExperiment") {
+    group = "application"
+    description = "Runs Module 1.8.7 — Adaptive Query Execution Experiment"
+    mainClass.set("com.shrikant.spark.shuffle.ShuffleAQEExperiment")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED",
+        "--add-opens=java.base/sun.security.action=ALL-UNNAMED"
+    )
+
+    val rawArgs = project.findProperty("args") as? String
+    if (rawArgs != null) {
+        setArgs(rawArgs.split(" "))
+    }
+}
