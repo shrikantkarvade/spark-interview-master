@@ -874,3 +874,52 @@ tasks.register<JavaExec>("runShuffleAQEExperiment") {
         setArgs(rawArgs.split(" "))
     }
 }
+
+tasks.register<JavaExec>("runMemoryTungsten") {
+    group = "Spark Internals - Performance"
+    description = "Runs Module 1.9.1 Memory Tungsten Off-Heap vs Heap Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.internals.performance.MemoryTungstenExperiment")
+
+    val caseArg = project.findProperty("case")?.toString() ?: "A"
+    args("--case=$caseArg")
+
+    jvmArgs = listOf(
+        // Required module exports for Spark 3.5.1 on Java 17
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+        // Required module opens
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED",
+        "--add-opens=java.base/java.text=ALL-UNNAMED",
+        "--add-opens=java.sql/java.sql=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runTungstenBinaryRow") {
+    group = "Spark Internals - Performance"
+    description = "Runs Module 1.9.2 Tungsten Binary Row Format Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.internals.performance.TungstenBinaryRowExperiment")
+
+    jvmArgs = listOf(
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.net=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED",
+        "--add-opens=java.base/java.text=ALL-UNNAMED",
+        "--add-opens=java.sql/java.sql=ALL-UNNAMED"
+    )
+}
