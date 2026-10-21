@@ -923,3 +923,68 @@ tasks.register<JavaExec>("runTungstenBinaryRow") {
         "--add-opens=java.sql/java.sql=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runCatalystCustomRule") {
+    group = "Spark Internals"
+    description = "Runs Module 2.1 Catalyst Custom Rule Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.internals.catalyst.CatalystCustomRuleExperiment")
+
+    // Pass standard Spark local execution environment flags if needed
+    jvmArgs(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED"
+    )
+
+    // Ensure standard output is connected so println and explain(true) show up in console
+    standardInput = System.`in`
+}
+
+tasks.register<JavaExec>("runTungstenMemoryExperiment") {
+    group = "Spark Internals"
+    description = "Runs Module 2.2 Tungsten Off-Heap Memory Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.internals.tungsten.MemoryTungstenExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.misc=ALL-UNNAMED"
+    )
+    standardInput = System.`in`
+}
+
+tasks.register<JavaExec>("runWholeStageCodegenExperiment") {
+    group = "Spark Internals"
+    description = "Runs Module 2.3 WholeStageCodegen & Janino Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.internals.codegen.WholeStageCodegenExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.misc=ALL-UNNAMED"
+    )
+
+    standardInput = System.`in`
+}
+
+tasks.register<JavaExec>("runAQEExperiment") {
+    group = "Spark Internals"
+    description = "Runs Module 2.4 Adaptive Query Execution Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.internals.aqe.AQEExperiment")
+
+    jvmArgs(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.misc=ALL-UNNAMED"
+    )
+
+    standardInput = System.`in`
+}
