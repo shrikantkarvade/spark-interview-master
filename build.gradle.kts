@@ -988,3 +988,51 @@ tasks.register<JavaExec>("runAQEExperiment") {
 
     standardInput = System.`in`
 }
+
+tasks.register<JavaExec>("runShufflePartitionExperiment") {
+    group = "Spark Performance Tuning"
+    description = "Runs Module 3.1: Shuffle Architecture & Partition Tuning Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.performance.ShufflePartitionExperiment")
+    jvmArgs(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runJoinStrategyExperiment") {
+    group = "Spark Performance Tuning"
+    description = "Runs Module 3.2: Join Strategies & Cost-Based Optimization Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.performance.JoinStrategyExperiment")
+    jvmArgs(
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runDataSkewExperiment") {
+    group = "Spark Performance Tuning"
+    description = "Runs Module 3.3: Data Skew Identification, Salting, & AQE Skew Joins Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.performance.DataSkewExperiment")
+    jvmArgs(
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runMemoryManagementExperiment") {
+    group = "Spark Performance Tuning"
+    description = "Runs Module 3.4: Memory Management, Execution/Storage Pools Experiment"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.shrikant.spark.performance.MemoryManagementExperiment")
+    jvmArgs(
+        "--add-opens=java.base/java.nio=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED"
+    )
+}
