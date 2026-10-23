@@ -1036,3 +1036,91 @@ tasks.register<JavaExec>("runMemoryManagementExperiment") {
         "--add-opens=java.base/java.lang=ALL-UNNAMED"
     )
 }
+
+tasks.register<JavaExec>("runStreamingArchExperiment") {
+    group = "spark-experiments"
+    description = "Executes Module 4.1: Streaming Architecture, Triggers, & Observability"
+    mainClass.set("streaming.StreamingArchitectureExperiment")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    // Set Hadoop home directory for Windows execution
+    val hadoopHome = "${System.getProperty("java.io.tmpdir")}\\hadoop-winutils"
+    systemProperty("hadoop.home.dir", hadoopHome)
+
+    // Corrected package name: sun.nio.ch (instead of java.nio.ch)
+    jvmArgs = listOf(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runStateManagementExperiment") {
+    group = "spark-experiments"
+    description = "Executes Module 4.2: State Management, RocksDB & Watermarking"
+    mainClass.set("streaming.StateManagementWatermarkingExperiment")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    // Reuse the Windows Hadoop home directory setup
+    val hadoopHome = "${System.getProperty("java.io.tmpdir")}\\hadoop-winutils"
+    systemProperty("hadoop.home.dir", hadoopHome)
+
+    jvmArgs = listOf(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runFaultToleranceExperiment") {
+    group = "spark-experiments"
+    description = "Executes Module 4.3: Fault Tolerance & DLQ Patterns"
+    mainClass.set("streaming.FaultToleranceDLQExperiment")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    val hadoopHome = "${System.getProperty("java.io.tmpdir")}\\hadoop-winutils"
+    systemProperty("hadoop.home.dir", hadoopHome)
+
+    jvmArgs = listOf(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runObservabilityExperiment") {
+    group = "spark-experiments"
+    description = "Executes Module 4.4: Production Observability & Metrics"
+    mainClass.set("streaming.ObservabilityMetricsExperiment")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    val hadoopHome = "${System.getProperty("java.io.tmpdir")}\\hadoop-winutils"
+    systemProperty("hadoop.home.dir", hadoopHome)
+
+    jvmArgs = listOf(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runStreamJoinExperiment") {
+    group = "spark-experiments"
+    description = "Executes Module 4.5: Stream-to-Stream Joins & State"
+    mainClass.set("streaming.StreamJoinStatefulExperiment")
+    classpath = sourceSets["main"].runtimeClasspath
+
+    val hadoopHome = "${System.getProperty("java.io.tmpdir")}\\hadoop-winutils"
+    systemProperty("hadoop.home.dir", hadoopHome)
+
+    jvmArgs = listOf(
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
