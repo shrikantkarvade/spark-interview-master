@@ -1,9 +1,3 @@
-You can save this comprehensive architectural guide under the following path and filename in your repository:
-
-`docs/lakehouse/module-5.6-streaming-delta.md`
-
----
-
 # Module 5.6: Structured Streaming with Delta Lake (Source & Sink Patterns)
 
 ## 1. Introduction to Streaming Lakehouses

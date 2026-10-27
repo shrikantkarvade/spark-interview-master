@@ -1,6 +1,7 @@
 plugins {
     scala
     application
+    id("com.gradleup.shadow") version "8.3.6"
 }
 
 group = "com.shrikant.spark"
@@ -21,6 +22,7 @@ dependencies {
     // Apache Spark
     implementation("org.apache.spark:spark-core_2.12:$sparkVersion")
     implementation("org.apache.spark:spark-sql_2.12:$sparkVersion")
+    implementation("org.apache.spark:spark-streaming_2.12:$sparkVersion")
 
     // Typesafe configuration
     implementation("com.typesafe:config:1.4.3")
@@ -34,6 +36,9 @@ dependencies {
 
     // Testing
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.scalatest:scalatest_2.12:3.2.18")
+    testImplementation("org.apache.spark:spark-core_2.12:$sparkVersion")
+    testImplementation("org.apache.spark:spark-sql_2.12:$sparkVersion")
 }
 
 application {
@@ -1250,4 +1255,32 @@ tasks.register<JavaExec>("runStreamingLakeHouseExperiment") {
         "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED",
         "-Xmx4G"
     )
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("all")
+    mergeServiceFiles()
+    configurations = listOf(project.configurations.runtimeClasspath.get())
+    isZip64 = true // Required for massive Spark + Delta dependency trees exceeding 65,535 files
+}
+
+tasks.register<JavaExec>("runTunedPipeline") {
+    group = "spark-execution"
+    description = "Executes the Spark pipeline with local dynamic resource allocation profiles."
+    classpath = sourceSets["main"].runtimeClasspath
+
+    mainClass.set("com.shrikant.spark.lakehouse.MedallionPipelineExperiment")
+
+    // Inject JVM module exports required for Spark on Java 17
+    jvmArgs(
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.invoke=ALL-UNNAMED"
+    )
+
+    // Local execution tuning properties
+    systemProperty("spark.master", "local[*]")
+    systemProperty("spark.dynamicAllocation.enabled", "true")
+    systemProperty("spark.dynamicAllocation.minExecutors", "1")
+    systemProperty("spark.dynamicAllocation.maxExecutors", "4")
 }

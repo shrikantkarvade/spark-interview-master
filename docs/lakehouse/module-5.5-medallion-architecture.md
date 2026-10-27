@@ -1,9 +1,3 @@
-You can save this comprehensive architectural guide under the following path and filename in your repository:
-
-`docs/lakehouse/module-5.5-medallion-architecture.md`
-
----
-
 # Module 5.5: Medallion Architecture Multi-Hop Pipeline (Bronze $\rightarrow$ Silver $\rightarrow$ Gold)
 
 ## 1. Introduction to the Medallion Architecture
