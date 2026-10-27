@@ -12,6 +12,7 @@ repositories {
 
 val scalaVersion: String by project
 val sparkVersion: String by project
+val deltaLakeVersion: String by project
 
 dependencies {
     // Scala
@@ -25,8 +26,11 @@ dependencies {
     implementation("com.typesafe:config:1.4.3")
 
     // Logging
-    implementation("org.apache.logging.log4j:log4j-api:2.24.3")
-    implementation("org.apache.logging.log4j:log4j-core:2.24.3")
+    implementation("org.apache.logging.log4j:log4j-api:2.26.1")
+    implementation("org.apache.logging.log4j:log4j-core:2.26.1")
+
+    // Delta Lake Spark
+    implementation("io.delta:delta-spark_2.12:$deltaLakeVersion")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
@@ -1122,5 +1126,128 @@ tasks.register<JavaExec>("runStreamJoinExperiment") {
         "--add-opens=java.base/java.lang=ALL-UNNAMED",
         "--add-opens=java.base/java.util=ALL-UNNAMED",
         "--add-opens=java.base/java.nio=ALL-UNNAMED"
+    )
+}
+
+tasks.register<JavaExec>("runLakeHouseExperiment") {
+    group = "lakehouse-phase5"
+    description = "Runs Module 5.1 LakeHouse Architecture Delta Lake Experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("lakehouse.LakehouseExperiment")
+
+    // Set working directory so spark-warehouse is created cleanly locally
+    workingDir = projectDir
+
+    // JVM arguments for Spark 3.x compatibility on Java 17+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED",
+        "-Xmx4G" // Allocate sufficient heap memory for Spark driver/executors
+    )
+}
+
+tasks.register<JavaExec>("runCdcExperiment") {
+    group = "lakehouse-phase5"
+    description = "Runs Module 5.2 Incremental Processing & CDC Experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("lakehouse.CdcExperiment")
+    workingDir = projectDir
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED",
+        "-Xmx4G"
+    )
+}
+
+tasks.register<JavaExec>("runDataQualityExperiment") {
+    group = "lakehouse-phase5"
+    description = "Runs Module 5.3 Data Quality & Quarantine DLQ Experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("lakehouse.DataQualityExperiment")
+    workingDir = projectDir
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED",
+        "-Xmx4G"
+    )
+}
+
+tasks.register<JavaExec>("runSchemaEvolutionExperiment") {
+    group = "lakehouse-phase5"
+    description = "Runs Module 5.4 Schema Evolution & Data Compatibility Experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("lakehouse.SchemaEvolutionExperiment")
+    workingDir = projectDir
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED",
+        "-Xmx4G"
+    )
+}
+
+tasks.register<JavaExec>("runMedallionExperiment") {
+    group = "lakehouse-phase5"
+    description = "Runs Module 5.5 Medallion Architecture Multi-Hop Pipeline Experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("lakehouse.MedallionPipelineExperiment")
+    workingDir = projectDir
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED",
+        "-Xmx4G"
+    )
+}
+
+tasks.register<JavaExec>("runStreamingLakeHouseExperiment") {
+    group = "lakehouse-phase5"
+    description = "Runs Module 5.6 Structured Streaming with Delta Lake Experiment"
+
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("lakehouse.StreamingLakehouseExperiment")
+    workingDir = projectDir
+
+    jvmArgs(
+        "--add-opens=java.base/java.lang=ALL-UNNAMED",
+        "--add-opens=java.base/java.invoke=ALL-UNNAMED",
+        "--add-opens=java.base/java.io=ALL-UNNAMED",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED",
+        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED",
+        "-Xmx4G"
     )
 }

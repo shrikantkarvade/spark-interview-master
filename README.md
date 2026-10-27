@@ -1,871 +1,277 @@
-# 🚀 Spark Interview Master
+# 🚀 Enterprise Spark Engineering & Interview Repository
 
-A hands-on, engineering-focused repository for mastering **Apache Spark, Big Data Engineering, distributed systems, and production-grade data processing** through real-world problems, experiments, performance analysis, and interview preparation.
+A hands-on repository for investigating **Apache Spark internals, performance engineering, and production-oriented data engineering** using Scala, Java, and Spark SQL.
 
-This repository is designed to demonstrate **senior/lead-level engineering expertise**, not just knowledge of Spark APIs.
+This project goes beyond API examples. Each experiment connects query semantics to physical execution, observable runtime behavior, benchmark evidence, and engineering trade-offs.
 
----
+<p align="left">
+  <img src="https://img.shields.io/badge/Apache%20Spark-3.5.1-E25A1C?logo=apachespark&logoColor=white" alt="Apache Spark 3.5.1" />
+  <img src="https://img.shields.io/badge/Scala-2.12.x-DC322F?logo=scala&logoColor=white" alt="Scala 2.12" />
+  <img src="https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white" alt="Java 17" />
+  <img src="https://img.shields.io/badge/Build-Gradle-02303A?logo=gradle&logoColor=white" alt="Gradle" />
+  <img src="https://img.shields.io/badge/Focus-Performance%20Engineering-2563EB" alt="Performance Engineering" />
+</p>
 
-# 🎯 What This Repository Demonstrates
-
-The goal is to answer questions such as:
-
-* Why is a Spark job slow?
-* Where exactly is time being spent?
-* What causes a shuffle?
-* How does Spark choose a physical execution strategy?
-* Why does one query require multiple stages?
-* How does Adaptive Query Execution change execution?
-* Why can `ORDER BY ... LIMIT 100` be dramatically cheaper than a full `ORDER BY`?
-* How do partitioning, joins, aggregations, serialization, and memory affect performance?
-* How do we diagnose Spark problems using the Spark UI and execution plans?
-* What design choices make a Spark application production-ready?
-
-The repository combines:
-
-**Use Case → Problem → Investigation → Spark Internals → Solution → Benchmark → Trade-offs**
+🔗 **Repository:** [shrikantkarvade/spark-interview-master](https://github.com/shrikantkarvade/spark-interview-master)
 
 ---
 
-# 🧠 Engineering-First Approach
+## 🧭 What This Repository Demonstrates
 
-This is not a collection of interview questions or copied Spark examples.
+- 🧠 Reasoning from a query requirement to Spark's physical execution plan.
+- 🔍 Investigating logical plans, physical operators, exchanges, stages, tasks, and shuffles.
+- ⚙️ Comparing query shapes, partitioning strategies, and execution configurations through controlled experiments.
+- 📊 Using `explain`, Spark UI, task metrics, and runtime measurements to validate hypotheses.
+- 🧩 Understanding how AQE, joins, aggregation, caching, memory, and serialization affect execution.
+- 🏗️ Building reusable Spark setup and experiment patterns rather than isolated snippets.
 
-Each module focuses on understanding **why Spark behaves the way it does**.
+### 🔬 The Engineering Workflow
 
-The approach is:
+**Use case → Hypothesis → Implementation → Physical plan → Spark UI and metrics → Analysis → Trade-offs → Decision**
 
-```text
-Real-world Use Case
-        ↓
-Problem Definition
-        ↓
-Implementation
-        ↓
-Execution Plan
-        ↓
-Spark UI
-        ↓
-Performance Metrics
-        ↓
-Root Cause
-        ↓
-Optimization
-        ↓
-Trade-offs
-        ↓
-Engineering Decision
+---
+
+## 🛠️ Technology Stack
+
+| Technology | Version / Usage |
+|---|---|
+| ☕ Java | Java 17 target/runtime |
+| 🔴 Scala | 2.12.x |
+| ⚡ Apache Spark | 3.5.1 |
+| 🐘 Build | Gradle Wrapper + Kotlin DSL |
+| 🗃️ Data processing | Spark SQL, DataFrame and Dataset APIs |
+| ⚙️ Configuration | Typesafe Config |
+| 📝 Logging | Log4j 2 |
+| ✅ Tests | JUnit 4 |
+
+> Exact local runtime patch versions may differ. See `gradle.properties` and `build.gradle.kts` for the project's dependency configuration.
+
+---
+
+## 🗺️ Project Progress
+
+The repository has progressed beyond the initial bootstrap and first query-shape benchmark. Implemented areas include foundational Spark examples and a growing set of focused experiments around query planning, data-source pushdown, partitioning, joins, aggregation, and resource behavior.
+
+### 🧱 Phase 1 — Foundation and Execution Fundamentals
+
+| Area | Coverage |
+|---|---|
+| 🏁 Repository bootstrap | Gradle Kotlin DSL, Scala/Spark dependencies, project layout |
+| 🧑‍💻 Spark entry points | Scala, Java, and Spark SQL foundation examples |
+| 🏢 Enterprise session setup | Shared SparkSession creation and environment-aware configuration patterns |
+| 🧭 Query planning | Logical-to-physical plan inspection |
+| 📥 Data-source optimization | Filter and projection pushdown experiments |
+| 🧮 Partitioning | Baseline, repartition, and coalesce experiments |
+| ⏱️ Performance baseline | Repeatable synthetic workloads, explicit parameters, plan inspection, Spark UI support |
+
+### ⚙️ Phase 2 — Query Execution and Performance Experiments
+
+Experiments are designed to isolate a particular behavior rather than change several settings at once.
+
+- 🔝 **Query shape and Top-N:** compare aggregation-only, aggregation with full ordering, and aggregation with `ORDER BY ... LIMIT`.
+- 🧾 **Physical plans:** inspect operators such as `HashAggregate`, `Exchange`, `Sort`, and `TakeOrderedAndProject`.
+- 🔀 **Shuffle behavior:** explore shuffle partition counts and the effect of AQE where enabled.
+- 🤝 **Joins:** investigate join strategy selection and the implications of broadcast settings, shuffle, and AQE.
+- 🧮 **Partitioning:** compare existing partition layouts with repartitioning and coalescing.
+- 🧠 **Aggregation resources:** examine how workload shape and configuration affect execution and spill behavior.
+- 💾 **Memory experiments:** compare selected Spark memory settings in separate application runs when the setting is fixed at SparkContext construction time.
+
+> 🚧 Not every topic above is a completed production solution; this is an experimental repository. Check the source and associated notes before treating a topic as complete.
+
+### 📊 Performance Case Study — Full Ordering vs. Top-N
+
+A foundational benchmark uses a deterministic synthetic workload with configurable row count, customer count, and shuffle partition count. It compares query shapes such as:
+
+1. `GROUP BY` plus `ORDER BY`
+2. `GROUP BY` only
+3. `GROUP BY` plus `ORDER BY ... LIMIT 100`
+
+**💡 Key lesson:** query semantics influence the physical plan. When only the highest N records are required, Spark may use a Top-N operator such as `TakeOrderedAndProject` rather than performing the same global range-partitioning and sorting work required by a full ordered result. The aggregation shuffle may still be necessary to compute correct grouped results.
+
+⏱️ Benchmark timings depend on hardware, JVM state, Spark configuration, and workload parameters. Treat execution plans, shuffle volume, task distribution, spill, GC, and AQE behavior as evidence alongside elapsed time—not as universal performance guarantees.
+
+---
+
+## 🧑‍🔬 How to Explore the Code
+
+Start with these repository areas:
+
+- 📂 [`src/main/scala`](src/main/scala) — Scala implementations and experiments.
+- 📂 [`src/main/java`](src/main/java) — Java implementations.
+- 📂 [`src/main/resources`](src/main/resources) — application and logging configuration.
+- 📂 [`conf`](conf) — project configuration files.
+- 🏗️ [`build.gradle.kts`](build.gradle.kts) — Gradle tasks, dependencies, and JVM options.
+- ⚙️ [`gradle.properties`](gradle.properties) — version and Gradle properties.
+- 📚 [`docs`](docs) — documentation and experiment findings, where available.
+
+> 📌 The repository layout may evolve as modules are added. Prefer the actual source tree over assuming that every planned directory or document already exists.
+
+---
+
+## 🚀 Getting Started
+
+### 📋 Prerequisites
+
+- Git
+- JDK 17
+- Windows, Linux, or macOS with a supported shell
+- Internet access for Gradle to resolve dependencies on the first build
+
+Check Java:
+
+```bash
+java -version
 ```
 
-The objective is to develop the ability to reason about distributed systems rather than simply memorize Spark concepts.
+### 📥 Clone the Repository
 
----
-
-# 🔍 Example Engineering Questions
-
-Examples of the types of questions investigated throughout the repository:
-
-### Spark Execution
-
-* What happens between a DataFrame transformation and actual execution?
-* How does Spark build a logical plan?
-* How does Catalyst optimize the plan?
-* How does Spark generate the physical plan?
-* What is WholeStageCodegen?
-* Why does Spark create multiple stages?
-
-### Shuffle
-
-* Why does a `groupBy` cause a shuffle?
-* Why can a shuffle be expensive?
-* How much data is actually shuffled?
-* How does Spark partition shuffle data?
-* How does AQE coalesce shuffle partitions?
-
-### Aggregation
-
-* What is partial aggregation?
-* Why does Spark perform aggregation before the shuffle?
-* How does `HashAggregate` work?
-* What happens when aggregation state becomes large?
-
-### Ordering and Top-N
-
-* Why does a global `ORDER BY` require additional coordination?
-* Why can `ORDER BY ... LIMIT 100` avoid a full global sort?
-* What is `TakeOrderedAndProject`?
-* When does Spark use range partitioning?
-* Why can Top-N queries be significantly cheaper than full ordering?
-
-### Performance Engineering
-
-* Is the problem CPU, memory, I/O, shuffle, skew, or serialization?
-* Are partitions balanced?
-* Are tasks becoming stragglers?
-* Is Spark spilling to disk?
-* Is garbage collection affecting execution?
-* Are we measuring the actual workload or only part of the execution?
-
----
-
-# 🛠️ Technology Stack
-
-| Technology   | Version           |
-| ------------ | ----------------- |
-| Java         | 17.0.20.101       |
-| Scala        | 2.12.18           |
-| Apache Spark | 3.5.1             |
-| Gradle       | 9.6.0             |
-| Build Tool   | Gradle Kotlin DSL |
-| Build System | Gradle Wrapper    |
-| IDE          | IntelliJ IDEA     |
-
----
-
-# 🏗️ Implementation Strategy
-
-The repository primarily uses:
-
-* Scala
-* Java
-* Apache Spark
-* Spark SQL
-* DataFrame API
-* Dataset API
-
-Implementations focus on:
-
-* readable production-style code
-* deterministic test data
-* measurable benchmarks
-* execution-plan analysis
-* Spark UI investigation
-* performance trade-offs
-* engineering documentation
-
----
-
-# 📂 Project Structure
-
-```text
-spark-interview-master/
-│
-├── datasets/
-│   ├── batch/
-│   ├── streaming/
-│   └── generated/
-│
-├── docs/
-│   ├── architecture/
-│   ├── case-studies/
-│   ├── performance/
-│   │   └── module-1.2-query-shape-top-n.md
-│   └── interview/
-│
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/shrikant/sparkjava/
-│   │   │
-│   │   ├── scala/
-│   │   │   └── com/shrikant/spark/
-│   │   │
-│   │   └── resources/
-│   │       ├── application.conf
-│   │       └── log4j2.properties
-│   │
-│   └── test/
-│       ├── java/
-│       └── scala/
-│
-├── build.gradle.kts
-├── settings.gradle.kts
-├── gradle.properties
-├── gradlew
-├── gradlew.bat
-├── LICENSE
-└── README.md
+```bash
+git clone https://github.com/shrikantkarvade/spark-interview-master.git
+cd spark-interview-master
 ```
 
----
+### 🏗️ Build the Project
 
-# 📚 Project Modules
-
-## Phase 1 — Spark Foundation
-
-### Module 1.1 — Repository Bootstrap ✅
-
-Established the engineering foundation of the repository.
-
-Focus areas:
-
-* Gradle Kotlin DSL
-* Scala integration
-* Java integration
-* Spark dependencies
-* Project structure
-* Testing foundation
-* Git/GitHub workflow
-* Build reproducibility
-
----
-
-### Module 1.2 — Spark Foundation: Query Execution & Performance ✅
-
-This module moves beyond basic Spark API usage into **execution-engine reasoning**.
-
-Focus areas:
-
-* SparkSession
-* DataFrame
-* Spark SQL
-* Transformations
-* Actions
-* Lazy evaluation
-* Logical plans
-* Physical plans
-* `explain(true)`
-* Jobs
-* Stages
-* Tasks
-* Shuffle
-* Partitioning
-* Partial aggregation
-* Final aggregation
-* Global ordering
-* Top-N execution
-* Adaptive Query Execution
-* Spark UI
-* Task-level metrics
-* Benchmark methodology
-
-### Engineering Case Study
-
-**Why can `ORDER BY ... LIMIT 100` be dramatically cheaper than `ORDER BY` in Spark?**
-
-A deterministic benchmark was created using:
-
-* 10,000,000 rows
-* 1,000,000 customers
-* 6 initial input partitions
-* 64 configured shuffle partitions
-* AQE enabled
-* Cached benchmark dataset
-* `local[*]` execution
-
-Three query shapes were compared:
-
-```text
-Scenario A
-GROUP BY + ORDER BY
-
-Scenario B
-GROUP BY ONLY
-
-Scenario C
-GROUP BY + ORDER BY + LIMIT 100
-```
-
-### Key Execution Difference
-
-Full ordering produces an execution path conceptually similar to:
-
-```text
-HashAggregate
-      ↓
-Exchange
-(hashpartitioning)
-      ↓
-HashAggregate
-      ↓
-Exchange
-(rangepartitioning)
-      ↓
-Sort
-      ↓
-Ordered result
-```
-
-The Top-N query instead uses:
-
-```text
-HashAggregate
-      ↓
-Exchange
-(hashpartitioning)
-      ↓
-HashAggregate
-      ↓
-TakeOrderedAndProject(100)
-      ↓
-Top 100 result
-```
-
-The important difference is that the Top-N query does **not require the same global range-partitioning exchange and separate global sort** used by the full ordering query.
-
-The first aggregation shuffle remains necessary because Spark must bring records belonging to the same customer together before calculating the final customer-level aggregate.
-
-### Spark UI Evidence
-
-The aggregation stage for the Top-N workload showed:
-
-* 6 tasks
-* approximately 0.9–1.0 seconds per task
-* approximately 5 ms GC per task
-* approximately 33.3–33.4 MiB input per task
-* approximately 10.7 MiB shuffle output per task
-* approximately 1,000,000 shuffle records per task
-* process-local execution
-* no failed tasks
-* no meaningful task imbalance
-* no spill
-* no significant GC pressure
-
-The evidence indicates that the aggregation workload was well balanced and that there was no meaningful skew or resource bottleneck in this stage.
-
-### Engineering Lesson
-
-> **Query semantics influence Spark's physical execution strategy.**
-
-A shuffle is not inherently bad.
-
-The important engineering questions are:
-
-1. Why is the shuffle required?
-2. What business requirement causes it?
-3. How much data is being shuffled?
-4. Is the shuffle balanced?
-5. Can the query semantics allow Spark to use a cheaper physical operator?
-6. Are we paying for work that the business requirement does not actually need?
-
-Detailed analysis:
-
-`docs/performance/module-1.2-query-shape-top-n.md`
-
----
-
-### Module 1.3 — Enterprise SparkSession ⏳
-
-Planned focus:
-
-* SparkSession lifecycle
-* application configuration
-* environment-specific configuration
-* local vs cluster execution
-* session isolation
-* production considerations
-
----
-
-### Module 1.4 — Configuration ⏳
-
-Planned focus:
-
-* Spark configuration
-* executor configuration
-* driver configuration
-* shuffle configuration
-* memory configuration
-* serialization
-* adaptive execution
-* environment-specific configuration
-
----
-
-### Module 1.5 — Logging ⏳
-
-Planned focus:
-
-* structured logging
-* log levels
-* application diagnostics
-* production troubleshooting
-* log4j configuration
-
----
-
-### Module 1.6 — Dataset Repository ⏳
-
-Planned focus:
-
-* reusable datasets
-* deterministic data generation
-* test fixtures
-* batch datasets
-* streaming datasets
-* benchmark datasets
-
----
-
-### Module 1.7 — Coding Standards ⏳
-
-Planned focus:
-
-* Scala coding standards
-* Java coding standards
-* Spark coding patterns
-* API selection
-* maintainability
-* production-quality implementation
-
----
-
-# ⚡ Spark Performance Engineering
-
-Performance engineering is a major component of this repository.
-
-Topics include:
-
-* Partition sizing
-* Shuffle optimization
-* Broadcast joins
-* Sort-merge joins
-* Hash joins
-* Join strategy selection
-* Data skew
-* AQE
-* Predicate pushdown
-* Projection pruning
-* Column pruning
-* Caching
-* Persistence
-* Serialization
-* Memory management
-* Spill behavior
-* Garbage collection
-* Task parallelism
-* File sizing
-* Small-file problems
-* Parquet optimization
-* Bucketing
-* Partition pruning
-* Query plan analysis
-
-The goal is not to memorize optimization techniques.
-
-The goal is to understand:
-
-> **Why the optimization works, when it works, and when it can make things worse.**
-
----
-
-# 🚀 Planned Advanced Topics
-
-Future modules will investigate topics such as:
-
-### Spark Execution Engine
-
-* Catalyst Optimizer
-* Tungsten
-* WholeStageCodegen
-* Adaptive Query Execution
-* Query stages
-* Exchange operators
-
-### Joins
-
-* Broadcast Hash Join
-* Sort Merge Join
-* Shuffled Hash Join
-* Broadcast thresholds
-* Join hints
-* Skew joins
-* Large-large joins
-
-### Data Skew
-
-* Identifying skew
-* Salting
-* AQE skew handling
-* Hot keys
-* Partition imbalance
-* Straggler analysis
-
-### Memory
-
-* Executor memory
-* Execution memory
-* Storage memory
-* Unified memory manager
-* Spill
-* GC
-* Off-heap memory
-
-### Storage
-
-* Parquet
-* ORC
-* Compression
-* Predicate pushdown
-* Column pruning
-* Partition pruning
-* Small-file optimization
-
-### Streaming
-
-* Structured Streaming
-* Checkpointing
-* Watermarks
-* State management
-* Exactly-once semantics
-* Kafka integration
-* Late-arriving data
-
----
-
-# 🏢 Real-World Data Engineering Scenarios
-
-The repository will model problems commonly encountered in enterprise data platforms.
-
-Examples:
-
-### Financial Risk
-
-* Market Risk
-* RWA calculations
-* FRTB
-* Regulatory reporting
-* Large-scale aggregation
-* Cross-region processing
-
-### Data Pipelines
-
-* Batch processing
-* Incremental processing
-* Historical reprocessing
-* Data quality
-* Schema evolution
-
-### Streaming
-
-* Kafka ingestion
-* Real-time enrichment
-* Stateful processing
-* Event-time processing
-
-### Enterprise Platforms
-
-* Large datasets
-* Multi-stage pipelines
-* SLA-driven workloads
-* Failure recovery
-* Observability
-* Performance optimization
-
----
-
-# 📊 Performance Case Studies
-
-| Case Study          | Root Cause                                                        | Engineering Solution                                             |
-| ------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `ORDER BY` vs Top-N | Full global ordering requires additional coordination and sorting | Use Top-N semantics when only the highest N records are required |
-| Large Join          | Excessive shuffle                                                 | Evaluate join strategy and partitioning                          |
-| Data Skew           | Uneven partition sizes                                            | AQE/skew handling/salting                                        |
-| Small Files         | Excessive task and metadata overhead                              | File compaction and sizing                                       |
-| Excessive GC        | Memory pressure / object overhead                                 | Reduce allocations and tune memory usage                         |
-| Slow Aggregation    | Large shuffle and aggregation state                               | Partial aggregation, partitioning, AQE                           |
-
----
-
-# 🧪 Testing Strategy
-
-Testing will cover multiple levels.
-
-### Unit Tests
-
-Validate:
-
-* transformations
-* business logic
-* utility functions
-* edge cases
-
-### Spark Tests
-
-Validate:
-
-* DataFrame transformations
-* aggregations
-* joins
-* partitioning behavior
-* schema correctness
-
-### Integration Tests
-
-Validate:
-
-* end-to-end pipelines
-* input/output behavior
-* external integrations
-
-### Performance Tests
-
-Measure:
-
-* execution time
-* shuffle volume
-* task distribution
-* spill
-* GC
-* partition behavior
-* execution plans
-
----
-
-# 🎯 Interview Preparation
-
-The repository is also structured to support senior-level Spark interviews.
-
-Instead of simply answering:
-
-> What is a shuffle?
-
-The objective is to answer:
-
-> Why did this particular query generate a shuffle, how much data did it move, how did the physical plan implement it, what did the Spark UI show, and what alternatives could reduce the cost?
-
-Topics include:
-
-* Spark architecture
-* Spark execution
-* RDD vs DataFrame vs Dataset
-* Catalyst
-* Tungsten
-* AQE
-* Joins
-* Shuffle
-* Partitioning
-* Data skew
-* Memory management
-* Structured Streaming
-* Kafka
-* Performance tuning
-* Debugging
-* System design
-
----
-
-# 🧩 Engineering Case Studies
-
-Each major case study follows:
-
-```text
-Business Requirement
-        ↓
-Technical Problem
-        ↓
-Initial Implementation
-        ↓
-Physical Plan
-        ↓
-Spark UI Investigation
-        ↓
-Performance Analysis
-        ↓
-Optimization
-        ↓
-Benchmark
-        ↓
-Trade-offs
-        ↓
-Final Engineering Decision
-```
-
-This structure is intentionally designed to demonstrate **engineering judgment**, rather than API familiarity alone.
-
----
-
-# 🌍 Build in Public
-
-This repository is being developed publicly as an ongoing engineering journey.
-
-Each major module can include:
-
-* implementation
-* benchmark
-* execution-plan analysis
-* Spark UI evidence
-* technical documentation
-* engineering case study
-* LinkedIn write-up
-
-The objective is to demonstrate practical expertise in:
-
-* Apache Spark
-* Big Data Engineering
-* distributed systems
-* performance engineering
-* production architecture
-* technical problem solving
-
----
-
-# 🗺️ Roadmap
-
-## Phase 1 — Foundation
-
-* [x] 1.1 Repository Bootstrap
-* [x] 1.2 Spark Foundation: Query Execution & Performance
-* [ ] 1.3 Enterprise SparkSession
-* [ ] 1.4 Configuration
-* [ ] 1.5 Logging
-* [ ] 1.6 Dataset Repository
-* [ ] 1.7 Coding Standards
-
-## Phase 2 — Spark Internals
-
-* [ ] Catalyst Optimizer
-* [ ] Tungsten
-* [ ] WholeStageCodegen
-* [ ] Adaptive Query Execution
-* [ ] Query Stages
-* [ ] Shuffle Internals
-
-## Phase 3 — Performance Engineering
-
-* [ ] Join Optimization
-* [ ] Data Skew
-* [ ] Partitioning
-* [ ] Memory Management
-* [ ] Serialization
-* [ ] Spill Analysis
-* [ ] GC Analysis
-
-## Phase 4 — Production Spark
-
-* [ ] Structured Streaming
-* [ ] Kafka
-* [ ] Checkpointing
-* [ ] Monitoring
-* [ ] Failure Recovery
-* [ ] Production Architecture
-
-## Phase 5 — Advanced Data Engineering
-
-* [ ] Large-scale Data Pipelines
-* [ ] Incremental Processing
-* [ ] Data Quality
-* [ ] Schema Evolution
-* [ ] Lakehouse Architecture
-* [ ] End-to-End Enterprise Case Studies
-
----
-
-# ▶️ Running the Project
-
-Build the project:
+**Linux / macOS / Git Bash**
 
 ```bash
 ./gradlew build
 ```
 
-Run Spark Foundation benchmark:
+**Windows Command Prompt / PowerShell**
+
+```powershell
+.\gradlew.bat build
+```
+
+### 🧰 Discover Available Experiment Tasks
+
+Gradle task names change as the project grows. List the tasks defined in the current checkout:
+
+```bash
+./gradlew tasks --all
+```
+
+Run an experiment using the exact task name shown by Gradle. The repository has foundation tasks for Scala, Java, SQL, performance benchmarking, session setup, query planning, pushdown, and partitioning. Consult `build.gradle.kts` for the current task-to-class mapping.
+
+A previously configured foundation benchmark can be launched with:
 
 ```bash
 ./gradlew runSparkFoundationBenchmark
 ```
 
-Run the Module 1.2 benchmark with explicit parameters:
+To pass benchmark arguments, use the syntax supported by that task in the current checkout. For example, the foundation benchmark has used row count, customer count, and shuffle partition count as positional parameters:
 
 ```bash
-./gradlew runSparkFoundationBenchmark --args="10000000 1000000 64 --ui-pause"
+./gradlew runSparkFoundationBenchmark --args="10000000 1000000 64"
 ```
 
-Parameters:
+If an experiment supports a Spark UI pause option, consult that experiment's argument parsing or comments for the exact flag syntax.
 
-```text
-10000000  → number of rows
-1000000   → number of customers
-64        → configured shuffle partitions
---ui-pause → pause after each scenario for Spark UI inspection
-```
+### 🖥️ Open the Spark UI
 
-Spark UI:
+For local Spark applications, the UI commonly starts at:
 
 ```text
 http://localhost:4040
 ```
 
----
-
-# 🔬 Benchmarking Philosophy
-
-Benchmarks in this repository are designed to be reproducible and explainable.
-
-The methodology aims to:
-
-* use deterministic datasets
-* materialize/cache data before comparison where appropriate
-* consume query results
-* inspect execution plans
-* inspect Spark UI
-* examine task-level metrics
-* compare physical execution strategies
-* distinguish wall-clock time from task-level metrics
-* avoid drawing conclusions from runtime alone
-
-Absolute timings are machine-dependent, particularly for `local[*]` benchmarks.
-
-The more important evidence is:
-
-* physical plan shape
-* number of exchanges
-* shuffle volume
-* partition distribution
-* task behavior
-* spill
-* GC
-* AQE behavior
-* operator selection
+The port can differ if 4040 is already occupied. Keep the application running while inspecting the UI; a completed application may no longer expose its live UI unless event logging/history-server support has been configured.
 
 ---
 
-# 💡 Engineering Philosophy
+## 📈 Benchmarking Principles
 
-> **Measure first. Optimize second.**
+The repository emphasizes explainable measurements:
 
-A Spark optimization should never be accepted simply because it sounds faster.
+1. 🎯 **State the question and hypothesis** before running the experiment.
+2. 🧪 **Control the variables:** keep input data and parameters consistent when comparing scenarios.
+3. ⏳ **Understand the timing:** determine whether data generation, caching, and materialization are included.
+4. 🧾 **Inspect the plans:** examine logical and physical execution.
+5. 🖥️ **Inspect the Spark UI:** review relevant stage and task metrics.
+6. 📊 **Compare runtime signals:** shuffle read/write, partition distribution, spill, GC, and task duration where available.
+7. 🧠 **Explain the result:** document why observed behavior matches—or differs from—the hypothesis.
+8. 📝 **Record limitations and trade-offs** alongside the conclusion.
 
-A good optimization should answer:
-
-1. What was slow?
-2. Why was it slow?
-3. What changed?
-4. Why should the change help?
-5. Did the physical plan change?
-6. Did the Spark UI confirm the expected behavior?
-7. Did the benchmark improve?
-8. What trade-offs were introduced?
+> ⚠️ Do not compare elapsed times blindly. Local runs are useful for studying execution mechanics, but they do not directly predict a distributed production cluster's performance.
 
 ---
 
-# 👨‍💻 Author
+## 🧠 Engineering Questions Explored
+
+### 🧭 Query Planning and Execution
+- How does Spark move from a logical plan to a physical plan?
+- Which operators introduce exchanges or sorts?
+- How do jobs, stages, and tasks relate to the query?
+- How can the same business requirement be expressed with different execution costs?
+
+### 🔀 Partitioning and Shuffle
+- What changes when input or shuffle partition counts change?
+- When is `repartition` worth its shuffle cost?
+- When can `coalesce` reduce partitions without a full shuffle?
+- Does AQE coalesce shuffle partitions or change the final plan?
+
+### 🤝 Joins and Aggregation
+- What determines the join strategy?
+- When is broadcasting useful, and what are its memory trade-offs?
+- How do partial and final aggregation reduce or redistribute data?
+- How can skew and uneven task durations be identified?
+
+### 💾 Memory and Runtime Behavior
+- When does Spark spill?
+- How should execution time be interpreted alongside GC and task metrics?
+- Which settings are fixed when the SparkContext is created?
+- Why should memory experiments isolate variables and often use separate application runs?
+
+### 🏭 Production-Minded Engineering
+- How should SparkSession creation and configuration be centralized?
+- How should experiments accept and validate command-line arguments?
+- How can a benchmark remain repeatable and understandable?
+- What evidence is needed before accepting an optimization?
+
+---
+
+## 🛣️ Roadmap
+
+The following are ongoing directions, not a claim that every item is already implemented.
+
+- 🔀 Deepen shuffle, join, and aggregation experiments.
+- ⚖️ Expand data-skew and AQE investigations.
+- 🧠 Continue memory, spill, serialization, and garbage-collection experiments.
+- 📚 Improve experiment documentation with physical-plan excerpts and Spark UI evidence.
+- 🌊 Extend Structured Streaming topics such as checkpoints, watermarks, state stores, recovery, and delivery semantics.
+- 🏞️ Develop larger end-to-end data engineering and lakehouse case studies.
+- ☁️ Add cloud-oriented implementations and realistic datasets in a separate, clearly scoped project where appropriate.
+
+Progress is incremental: completed work should be supported by source code, reproducible commands, and documented evidence.
+
+---
+
+## 🎯 Interview Preparation
+
+This repository can help prepare for senior and lead data engineering interviews by practicing explanations that connect code to distributed execution:
+
+> ❓ Why did Spark choose this physical operator? What data moved across the shuffle? What did the Spark UI show? Which alternative would you test, and what trade-offs would it introduce?
+
+Topics include Spark SQL, Catalyst planning, execution stages, joins, aggregation, partitioning, AQE, memory behavior, Structured Streaming, and performance diagnosis.
+
+---
+
+## 👨‍💻 Author
 
 **Shrikant Karvade**
 
-Senior Big Data / Data Engineering professional with extensive experience in:
+Big Data and Data Engineering professional working with Java, Scala, Apache Spark, Hadoop, distributed data processing, and performance engineering.
 
-* Apache Spark
-* Scala
-* Java
-* Hadoop
-* Hive
-* Kafka
-* Big Data architecture
-* Data pipelines
-* Performance engineering
-* Enterprise data platforms
+- 🐙 GitHub: [@shrikantkarvade](https://github.com/shrikantkarvade)
+- 🚀 Project: [Enterprise Spark Engineering & Interview Repository](https://github.com/shrikantkarvade/spark-interview-master)
 
 ---
 
-# ⭐ Why This Repository Exists
+## 🤝 Contributing and Feedback
 
-The purpose of this repository is to build a practical reference for **senior-level Spark and Big Data engineering**.
+Suggestions, issue reports, and discussions are welcome. Please include the Spark version, experiment parameters, relevant plan output, and Spark UI/task metrics when reporting a performance observation.
 
-It is intentionally focused on:
+## 📄 License
 
-**Understanding → Experimentation → Measurement → Optimization → Engineering Judgment**
-
-rather than simply collecting interview questions and answers.
-
-The ultimate goal is to demonstrate the ability to take a real distributed-data problem, understand what the engine is doing internally, measure its behavior, identify the bottleneck, and make an informed engineering decision.
+This project is distributed under the [MIT License](LICENSE).
